@@ -67,6 +67,18 @@ class trainA2B():
             self.optimizer.apply_gradients(zip(grads,train_vals))
             batch_loss = tf.reduce_mean(loss,axis=0)
         return batch_loss,pre_b
+    def trainGen(self,x_input):
+        with tf.GradientTape() as tape:
+            modelA2B.trainable = True
+            pre_b = modelA2B(x_input)
+            loss_func = tf.losses.MeanSquaredError(x_input,pre_b)
+            train_vals = modelA2B.trainable_variables
+            grads = tape.gradient(loss,train_vals)
+            self.optimizer.apply_gradients(zip(grads,train_vals))
+            batch_loss = tf.reduce_mean(loss,axis=0)
+        return batch_loss,pre_b
+
+            
     def save_model(self):
         pass
 
