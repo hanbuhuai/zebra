@@ -52,7 +52,7 @@ class jpg2record():
                     serialized_image = self._serialize_example(img_tensor)
                     writer.write(serialized_image)
             writer.close()
-        
+"""    
 if __name__ == "__main__":
     pmA = jpg2record("images","trainA")
     pmB = jpg2record("images","trainB")
@@ -61,4 +61,5 @@ if __name__ == "__main__":
     tb = threading.Thread(target=pmB.record,args=("records/trainB",))
     ta.start()
     tb.start()
+"""
         

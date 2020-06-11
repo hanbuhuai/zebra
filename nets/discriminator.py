@@ -47,7 +47,7 @@ class Discriminator(keras.Model):
         self.flatten = keras.layers.Flatten()
         self.dense_1 = keras.layers.Dense(1024)
         self.dense_2 = keras.layers.Dense(128)
-        self.dense_3 = keras.layers.Dense(2)
+        self.dense_3 = keras.layers.Dense(4)
     def call(self,x_input):
         x_input = tf.reshape(x_input,shape=(-1,3,256,256)) #(batch_size,2,256,256)
         x_input = tf.transpose(x_input,perm=[0,2,3,1])

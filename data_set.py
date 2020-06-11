@@ -31,11 +31,11 @@ class data_maker():
         time_step_pre_epoch = self._data_size//batch_size 
         return self.img_set.batch(batch_size,drop_remainder=True),time_step_pre_epoch
 class data_recod():
-    def __init__(self,record_path,record_name,shuffle=True):
+    def __init__(self,record_path,record_name,data_size,shuffle=True):
         self._droot = os.path.abspath(os.path.dirname(__file__))
         self._drecord = os.path.join(self._droot,record_path)
         self.data_set = self._load_record(record_name)
-
+        self.data_size = data_size
     def _unserialize_example(self,serialized):
         example = tf.io.parse_single_example(serialized,features={
             "image_tensor":tf.io.FixedLenFeature([256*256*3],dtype=tf.float32),
@@ -43,11 +43,15 @@ class data_recod():
         return example['image_tensor']
     def _load_record(self,record_name):
         path_selecter = os.path.join(self._drecord,"{record_name}/*.record.zip".format(record_name=record_name))
-        print(path_selecter)
         flist = glob.glob(path_selecter)
         data_set = tf.data.TFRecordDataset(flist,compression_type="GZIP")
         data_set = data_set.map(self._unserialize_example)
         return data_set
+    def mk_data_set(self,batch_size):
+        data_set = self.data_set.batch(batch_size=batch_size)
+        time_step = self.data_size//batch_size
+        time_step = time_step if self.data_size%batch_size==0 else time_step+1
+        return data_set,time_step
 
 class batch_feature():
     """
@@ -89,14 +93,6 @@ class batch_feature():
         tf.io.write_file(os.path.join(self.preview_dir,fname),image)
         return os.path.join(self.preview_dir,fname)
 
-  
-if __name__ == "__main__":
-    m = data_recod("records","testB")
-    d = m.data_set.batch(batch_size=8)
-    bf = batch_feature(batch_size=8)
-    for item in d.take(5):
-        bf.add_image(item)
-    bf.save("1.jpeg")
         
 
     
